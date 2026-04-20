@@ -29,7 +29,11 @@ const initialState = {
 const chatSlice = createSlice({
   name: 'chat',
   initialState,
-  reducers: {},
+  reducers: {
+    messageReceived(state, { payload }) {
+      state.messages.push(payload)
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchChatData.pending, (state) => {
@@ -50,4 +54,5 @@ const chatSlice = createSlice({
   },
 });
 
+export const { messageReceived } = chatSlice.actions;
 export default chatSlice.reducer;

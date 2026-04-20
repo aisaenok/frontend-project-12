@@ -1,14 +1,36 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Container, Row, Col, ListGroup, Card, Form, Button, Spinner, Alert } from 'react-bootstrap';
-import { fetchChatData } from '../slices/chatSlice.js';
+import {
+  Container,
+  Row,
+  Col,
+  ListGroup,
+  Card,
+  Form,
+  Button,
+  Spinner,
+  Alert,
+} from 'react-bootstrap';
+import { fetchChatData, messageReceived } from '../slices/chatSlice.js';
 import { logOut } from '../slices/authSlice.js';
 import { removeToken, removeUsername } from '../utils/auth.js';
+import {
+  connectSocket,
+  subscribeToNewMessages,
+  disconnectSocket,
+  sendMessage,
+} from '../socket.js';
 
 function ChatPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [messageBody, setMessageBody] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState(false);
+
+  const username = useSelector((state) => state.auth.username);
 
   const {
     channels,
@@ -35,6 +57,49 @@ function ChatPage() {
       navigate('/login', { replace: true });
     }
   }, [dispatch, error, navigate]);
+
+  useEffect(() => {
+    connectSocket();
+
+    const unsubscribe = subscribeToNewMessages((payload) => {
+      dispatch(messageReceived(payload));
+    });
+
+    return () => {
+      unsubscribe();
+      disconnectSocket();
+    };
+  }, [dispatch]);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const trimmedBody = messageBody.trim();
+
+    if (!trimmedBody) {
+      return;
+    }
+
+    setSendError(false);
+    setIsSending(true);
+
+    const payload = {
+      body: trimmedBody,
+      channelId: currentChannelId,
+      username,
+    };
+
+    sendMessage(payload)
+      .then(() => {
+        setMessageBody('');
+      })
+      .catch(() => {
+        setSendError(true);
+      })
+      .finally(() => {
+        setIsSending(false);
+      });
+  };
 
   if (status === 'loading') {
     return (
@@ -95,14 +160,22 @@ function ChatPage() {
             </Card.Body>
 
             <Card.Footer>
-              <Form>
+              {sendError && (
+                <Alert variant="danger" className="mb-2">
+                  Не удалось отправить сообщение
+                </Alert>
+              )}
+
+              <Form onSubmit={handleSubmit}>
                 <div className="d-flex gap-2">
                   <Form.Control
                     type="text"
                     placeholder="Введите сообщение..."
-                    disabled
+                    value={messageBody}
+                    onChange={(event) => setMessageBody(event.target.value)}
+                    disabled={isSending}
                   />
-                  <Button type="submit" disabled>
+                  <Button type="submit" disabled={isSending}>
                     Отправить
                   </Button>
                 </div>
