@@ -1,13 +1,22 @@
-const storageKey = 'token';
+const tokenKey = 'token';
+const usernameKey = 'username';
 
-export const getToken = () => localStorage.getItem(storageKey);
+export const getToken = () => localStorage.getItem(tokenKey);
 
 export const setToken = (token) => {
-  localStorage.setItem(storageKey, token);
+  localStorage.setItem(tokenKey, token);
 };
 
 export const removeToken = () => {
-  localStorage.removeItem(storageKey);
+  localStorage.removeItem(tokenKey);
 };
 
-export const isAuthenticated = () => Boolean(getToken());
+export const getUsername = () => localStorage.getItem(usernameKey);
+
+export const setUsername = (username) => {
+  localStorage.setItem(usernameKey, username);
+};
+
+export const removeUsername = () => {
+  localStorage.removeItem(usernameKey);
+};

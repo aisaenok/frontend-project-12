@@ -1,25 +1,37 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field } from 'formik';
 import { Button, Container, Card, Alert } from 'react-bootstrap';
-import { isAuthenticated, setToken } from '../utils/auth.js';
+import { setToken, setUsername } from '../utils/auth.js';
+import { logIn } from '../slices/authSlice.js';
+import { loginRequest } from '../api.js';
 
 function LoginPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.token);
   const [authFailed, setAuthFailed] = useState(false);
 
-  if (isAuthenticated()) {
+  if (token) {
     return <Navigate to="/" replace />;
   }
 
   const handleSubmit = (values, { setSubmitting }) => {
     setAuthFailed(false);
 
-    axios.post('/api/v1/login', values)
+    loginRequest(values)
       .then((response) => {
-        const { token } = response.data;
-        setToken(token);
+        const { token: authToken } = response.data;
+
+        setToken(authToken);
+        setUsername(values.username);
+
+        dispatch(logIn({
+          token: authToken,
+          username: values.username,
+        }));
+
         navigate('/', { replace: true });
       })
       .catch(() => {
