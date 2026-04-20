@@ -22,7 +22,7 @@ const initialState = {
   channels: [],
   messages: [],
   currentChannelId: null,
-  status: 'idle', // idle | loading | succeeded | failed
+  status: 'idle',
   error: null,
 };
 
@@ -30,9 +30,46 @@ const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
+    setCurrentChannelId(state, { payload }) {
+      state.currentChannelId = payload;
+    },
     messageReceived(state, { payload }) {
-      state.messages.push(payload)
-    }
+      const exists = state.messages.some((message) => message.id === payload.id);
+
+      if (!exists) {
+        state.messages.push(payload);
+      }
+    },
+    channelAdded(state, { payload }) {
+      if (!payload || payload.id == null || payload.name == null) {
+        return;
+      }
+
+      const exists = state.channels.some((channel) => channel.id === payload.id);
+
+      if (!exists) {
+        state.channels.push(payload);
+      }
+    },
+    channelRemoved(state, { payload }) {
+      state.channels = state.channels.filter((channel) => channel.id !== payload.id);
+      state.messages = state.messages.filter((message) => message.channelId !== payload.id);
+
+      if (state.currentChannelId === payload.id) {
+        state.currentChannelId = 1;
+      }
+    },
+    channelRenamed(state, { payload }) {
+      if (!payload || payload.id == null || payload.name == null) {
+        return;
+      }
+
+      const channel = state.channels.find((item) => item.id === payload.id);
+
+      if (channel) {
+        channel.name = payload.name;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -54,5 +91,12 @@ const chatSlice = createSlice({
   },
 });
 
-export const { messageReceived } = chatSlice.actions;
+export const {
+  setCurrentChannelId,
+  messageReceived,
+  channelAdded,
+  channelRemoved,
+  channelRenamed,
+} = chatSlice.actions;
+
 export default chatSlice.reducer;
