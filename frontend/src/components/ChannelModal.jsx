@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
-import { Formik } from 'formik';
-import * as yup from 'yup';
+import { useMemo } from 'react'
+import { Modal, Button, Form } from 'react-bootstrap'
+import { Formik } from 'formik'
+import * as yup from 'yup'
 
 function ChannelModal({
   show,
@@ -11,14 +11,14 @@ function ChannelModal({
   onHide,
   onSubmit,
 }) {
-  const isRemove = type === 'remove';
-  const isRename = type === 'rename';
-  const title = isRemove ? 'Удалить канал' : isRename ? 'Переименовать канал' : 'Добавить канал';
+  const isRemove = type === 'remove'
+  const isRename = type === 'rename'
+  const title = isRemove ? 'Удалить канал' : isRename ? 'Переименовать канал' : 'Добавить канал'
 
-  const channelNames = channels.map(({ name }) => name);
+  const channelNames = channels.map(({ name }) => name)
   const filteredNames = isRename
-    ? channelNames.filter((name) => name !== channel?.name)
-    : channelNames;
+    ? channelNames.filter(name => name !== channel?.name)
+    : channelNames
 
   const validationSchema = useMemo(() => yup.object({
     name: yup
@@ -28,11 +28,11 @@ function ChannelModal({
       .min(3, 'От 3 до 20 символов')
       .max(20, 'От 3 до 20 символов')
       .notOneOf(filteredNames, 'Должно быть уникальным'),
-  }), [filteredNames]);
+  }), [filteredNames])
 
   const initialValues = {
     name: isRename ? channel?.name ?? '' : '',
-  };
+  }
 
   if (isRemove) {
     return (
@@ -53,7 +53,7 @@ function ChannelModal({
           </Button>
         </Modal.Footer>
       </Modal>
-    );
+    )
   }
 
   return (
@@ -64,15 +64,15 @@ function ChannelModal({
         onSubmit={(values, formikHelpers) => {
           const payload = isRename
             ? { id: channel.id, name: values.name.trim() }
-            : { name: values.name.trim() };
+            : { name: values.name.trim() }
 
           Promise.resolve(onSubmit(payload))
             .then(() => {
-              formikHelpers.resetForm();
+              formikHelpers.resetForm()
             })
             .finally(() => {
-              formikHelpers.setSubmitting(false);
-            });
+              formikHelpers.setSubmitting(false)
+            })
         }}
       >
         {({
@@ -113,7 +113,7 @@ function ChannelModal({
         )}
       </Formik>
     </Modal>
-  );
+  )
 }
 
-export default ChannelModal;
+export default ChannelModal

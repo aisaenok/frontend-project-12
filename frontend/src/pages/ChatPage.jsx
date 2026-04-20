@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import {
   Container,
   Row,
@@ -13,10 +13,10 @@ import {
   Alert,
   Dropdown,
   ButtonGroup,
-} from 'react-bootstrap';
-import { fetchChatData, messageReceived, setCurrentChannelId, channelAdded, channelRemoved, channelRenamed } from '../slices/chatSlice.js';
-import { logOut } from '../slices/authSlice.js';
-import { removeToken, removeUsername } from '../utils/auth.js';
+} from 'react-bootstrap'
+import { fetchChatData, messageReceived, setCurrentChannelId, channelAdded, channelRemoved, channelRenamed } from '../slices/chatSlice.js'
+import { logOut } from '../slices/authSlice.js'
+import { removeToken, removeUsername } from '../utils/auth.js'
 import {
   connectSocket,
   subscribeToNewMessages,
@@ -28,21 +28,21 @@ import {
   addChannel,
   removeChannelRequest,
   renameChannelRequest,
-} from '../socket.js';
-import ChannelModal from '../components/ChannelModal.jsx';
+} from '../socket.js'
+import ChannelModal from '../components/ChannelModal.jsx'
 
 function ChatPage() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
-  const [messageBody, setMessageBody] = useState('');
-  const [isSending, setIsSending] = useState(false);
-  const [sendError, setSendError] = useState(false);
+  const [messageBody, setMessageBody] = useState('')
+  const [isSending, setIsSending] = useState(false)
+  const [sendError, setSendError] = useState(false)
 
-  const [modalType, setModalType] = useState(null);
-  const [modalChannel, setModalChannel] = useState(null);
+  const [modalType, setModalType] = useState(null)
+  const [modalChannel, setModalChannel] = useState(null)
 
-  const username = useSelector((state) => state.auth.username);
+  const username = useSelector(state => state.auth.username)
 
   const {
     channels,
@@ -50,145 +50,145 @@ function ChatPage() {
     currentChannelId,
     status,
     error,
-  } = useSelector((state) => state.chat);
+  } = useSelector(state => state.chat)
 
-  const currentChannel = channels.find((channel) => channel.id === currentChannelId);
-  const currentMessages = messages.filter((message) => message.channelId === currentChannelId);
+  const currentChannel = channels.find(channel => channel.id === currentChannelId)
+  const currentMessages = messages.filter(message => message.channelId === currentChannelId)
 
   useEffect(() => {
     if (status === 'idle') {
-      dispatch(fetchChatData());
+      dispatch(fetchChatData())
     }
-  }, [dispatch, status]);
+  }, [dispatch, status])
 
   useEffect(() => {
     if (error === 'unauthorized') {
-      removeToken();
-      removeUsername();
-      dispatch(logOut());
-      navigate('/login', { replace: true });
+      removeToken()
+      removeUsername()
+      dispatch(logOut())
+      navigate('/login', { replace: true })
     }
-  }, [dispatch, error, navigate]);
+  }, [dispatch, error, navigate])
 
   useEffect(() => {
-    connectSocket();
+    connectSocket()
 
     const unsubscribeMessages = subscribeToNewMessages((payload) => {
-      dispatch(messageReceived(payload));
-    });
+      dispatch(messageReceived(payload))
+    })
 
     const unsubscribeChannels = subscribeToNewChannels((payload) => {
-      console.log('newChannel received', payload);
-      dispatch(channelAdded(payload));
-    });
+      console.log('newChannel received', payload)
+      dispatch(channelAdded(payload))
+    })
 
     const unsubscribeRemoved = subscribeToRemovedChannels((payload) => {
-      console.log('removeChannel received', payload);
-      dispatch(channelRemoved(payload));
-    });
+      console.log('removeChannel received', payload)
+      dispatch(channelRemoved(payload))
+    })
 
     const unsubscribeRenamed = subscribeToRenamedChannels((payload) => {
-      console.log('renameChannel received', payload);
-      dispatch(channelRenamed(payload));
-    });
+      console.log('renameChannel received', payload)
+      dispatch(channelRenamed(payload))
+    })
 
     return () => {
-      unsubscribeMessages();
-      unsubscribeChannels();
-      unsubscribeRemoved();
-      unsubscribeRenamed();
-      disconnectSocket();
-    };
-  }, [dispatch]);
+      unsubscribeMessages()
+      unsubscribeChannels()
+      unsubscribeRemoved()
+      unsubscribeRenamed()
+      disconnectSocket()
+    }
+  }, [dispatch])
 
   const handleMessageSubmit = (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    const trimmedBody = messageBody.trim();
+    const trimmedBody = messageBody.trim()
 
     if (!trimmedBody) {
-      return;
+      return
     }
 
-    setSendError(false);
-    setIsSending(true);
+    setSendError(false)
+    setIsSending(true)
 
     const payload = {
       body: trimmedBody,
       channelId: currentChannelId,
       username,
-    };
+    }
 
     sendMessage(payload)
       .then(() => {
-        setMessageBody('');
+        setMessageBody('')
       })
       .catch(() => {
-        setSendError(true);
+        setSendError(true)
       })
       .finally(() => {
-        setIsSending(false);
-      });
-  };
+        setIsSending(false)
+      })
+  }
 
   const openAddModal = () => {
-    setModalType('add');
-    setModalChannel(null);
-  };
+    setModalType('add')
+    setModalChannel(null)
+  }
 
   const openRenameModal = (channel) => {
-    setModalType('rename');
-    setModalChannel(channel);
-  };
+    setModalType('rename')
+    setModalChannel(channel)
+  }
 
   const openRemoveModal = (channel) => {
-    setModalType('remove');
-    setModalChannel(channel);
-  };
+    setModalType('remove')
+    setModalChannel(channel)
+  }
 
   const closeModal = () => {
-    setModalType(null);
-    setModalChannel(null);
-  };
+    setModalType(null)
+    setModalChannel(null)
+  }
 
   const handleModalSubmit = (payload) => {
     if (modalType === 'add') {
       return addChannel(payload).then((response) => {
-        console.log('addChannel ack raw', response);
-        console.log('addChannel ack data', response?.data ?? response);
-        const createdChannel = response?.data ?? response;
+        console.log('addChannel ack raw', response)
+        console.log('addChannel ack data', response?.data ?? response)
+        const createdChannel = response?.data ?? response
 
-        dispatch(channelAdded(createdChannel));
-        dispatch(setCurrentChannelId(createdChannel.id));
-        closeModal();
-      });
+        dispatch(channelAdded(createdChannel))
+        dispatch(setCurrentChannelId(createdChannel.id))
+        closeModal()
+      })
     }
 
     if (modalType === 'rename') {
       return renameChannelRequest(payload).then((response) => {
-        const renamedChannel = response?.data ?? response;
+        const renamedChannel = response?.data ?? response
 
-        dispatch(channelRenamed(renamedChannel));
-        closeModal();
-      });
+        dispatch(channelRenamed(renamedChannel))
+        closeModal()
+      })
     }
 
     if (modalType === 'remove') {
       return removeChannelRequest(payload).then(() => {
-        dispatch(channelRemoved(payload));
-        closeModal();
-      });
+        dispatch(channelRemoved(payload))
+        closeModal()
+      })
     }
 
-    return Promise.resolve();
-  };
+    return Promise.resolve()
+  }
 
   if (status === 'loading') {
     return (
       <Container className="h-100 d-flex justify-content-center align-items-center">
         <Spinner animation="border" />
       </Container>
-    );
+    )
   }
 
   if (status === 'failed' && error !== 'unauthorized') {
@@ -198,7 +198,7 @@ function ChatPage() {
           Не удалось загрузить данные чата
         </Alert>
       </Container>
-    );
+    )
   }
 
   return (
@@ -227,7 +227,7 @@ function ChatPage() {
                           {`# ${channel.name}`}
                         </Button>
                       </ListGroup.Item>
-                    );
+                    )
                   }
 
                   return (
@@ -257,7 +257,7 @@ function ChatPage() {
                         </Dropdown.Menu>
                       </Dropdown>
                     </ListGroup.Item>
-                  );
+                  )
                 })}
               </ListGroup>
             </Card>
@@ -268,13 +268,15 @@ function ChatPage() {
               <Card.Header>
                 <b>{currentChannel ? `# ${currentChannel.name}` : 'Чат'}</b>
                 <div className="text-muted small">
-                  {currentMessages.length} сообщений
+                  {currentMessages.length}
+                  {' '}
+                  сообщений
                 </div>
               </Card.Header>
 
               <Card.Body className="overflow-auto">
                 <ListGroup variant="flush">
-                  {currentMessages.map((message) => (
+                  {currentMessages.map(message => (
                     <ListGroup.Item key={message.id} className="border-0 px-0 text-break">
                       <b>{message.username}</b>
                       {': '}
@@ -297,7 +299,7 @@ function ChatPage() {
                       type="text"
                       placeholder="Введите сообщение..."
                       value={messageBody}
-                      onChange={(event) => setMessageBody(event.target.value)}
+                      onChange={event => setMessageBody(event.target.value)}
                       disabled={isSending}
                     />
                     <Button type="submit" disabled={isSending}>
@@ -320,7 +322,7 @@ function ChatPage() {
         onSubmit={handleModalSubmit}
       />
     </>
-  );
+  )
 }
 
-export default ChatPage;
+export default ChatPage

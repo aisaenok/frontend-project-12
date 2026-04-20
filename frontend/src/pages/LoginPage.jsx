@@ -1,46 +1,46 @@
-import { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { Formik, Form, Field } from 'formik';
-import { Button, Container, Card, Alert } from 'react-bootstrap';
-import { setToken, setUsername } from '../utils/auth.js';
-import { logIn } from '../slices/authSlice.js';
-import { loginRequest } from '../api.js';
+import { useState } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { Formik, Form, Field } from 'formik'
+import { Button, Container, Card, Alert } from 'react-bootstrap'
+import { setToken, setUsername } from '../utils/auth.js'
+import { logIn } from '../slices/authSlice.js'
+import { loginRequest } from '../api.js'
 
 function LoginPage() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
-  const [authFailed, setAuthFailed] = useState(false);
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const token = useSelector(state => state.auth.token)
+  const [authFailed, setAuthFailed] = useState(false)
 
   if (token) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" replace />
   }
 
   const handleSubmit = (values, { setSubmitting }) => {
-    setAuthFailed(false);
+    setAuthFailed(false)
 
     loginRequest(values)
       .then((response) => {
-        const { token: authToken } = response.data;
+        const { token: authToken } = response.data
 
-        setToken(authToken);
-        setUsername(values.username);
+        setToken(authToken)
+        setUsername(values.username)
 
         dispatch(logIn({
           token: authToken,
           username: values.username,
-        }));
+        }))
 
-        navigate('/', { replace: true });
+        navigate('/', { replace: true })
       })
       .catch(() => {
-        setAuthFailed(true);
+        setAuthFailed(true)
       })
       .finally(() => {
-        setSubmitting(false);
-      });
-  };
+        setSubmitting(false)
+      })
+  }
 
   return (
     <Container className="h-100 d-flex justify-content-center align-items-center">
@@ -100,7 +100,7 @@ function LoginPage() {
         </Card.Body>
       </Card>
     </Container>
-  );
+  )
 }
 
-export default LoginPage;
+export default LoginPage
