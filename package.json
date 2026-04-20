@@ -1,0 +1,15 @@
+{
+  "name": "@hexlet/code",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Hexlet Chat",
+  "type": "module",
+  "scripts": {
+    "build": "cd frontend && npm run build",
+    "start": "npx start-server -s ./frontend/dist",
+    "lint": "cd frontend && npm run lint"
+  },
+  "dependencies": {
+    "@hexlet/chat-server": "^2.0.4"
+  }
+}
