@@ -22,7 +22,7 @@ Hexlet Chat — учебное чат-приложение со серверно
 
 ```bash
 git clone https://github.com/aisaenok/frontend-project-12.git
-cd <repo_name>
+cd frontend-project-12
 make install
 ```
 

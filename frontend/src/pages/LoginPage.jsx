@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { Formik, Form, Field } from 'formik'
 import { Button, Container, Card, Alert } from 'react-bootstrap'
@@ -98,6 +98,11 @@ function LoginPage() {
             )}
           </Formik>
         </Card.Body>
+        <Card.Footer className="text-center">
+          Нет аккаунта?
+          {' '}
+          <Link to="/signup">Регистрация</Link>
+        </Card.Footer>
       </Card>
     </Container>
   )
