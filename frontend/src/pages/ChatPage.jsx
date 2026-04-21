@@ -32,6 +32,7 @@ import {
   renameChannelRequest,
 } from '../socket.js'
 import ChannelModal from '../components/ChannelModal.jsx'
+import cleanProfanity from '../utils/cleanProfanity.js'
 
 function ChatPage() {
   const dispatch = useDispatch()
@@ -125,11 +126,13 @@ function ChatPage() {
       return
     }
 
+    const sanitizedBody = cleanProfanity(trimmedBody)
+
     setSendError(false)
     setIsSending(true)
 
     const payload = {
-      body: trimmedBody,
+      body: sanitizedBody,
       channelId: currentChannelId,
       username,
     }

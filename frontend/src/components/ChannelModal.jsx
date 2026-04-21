@@ -3,6 +3,7 @@ import { Modal, Button, Form } from 'react-bootstrap'
 import { Formik } from 'formik'
 import * as yup from 'yup'
 import { useTranslation } from 'react-i18next'
+import cleanProfanity from '../utils/cleanProfanity.js'
 
 function ChannelModal({
   show,
@@ -68,9 +69,11 @@ function ChannelModal({
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={(values, formikHelpers) => {
+          const sanitizedName = cleanProfanity(values.name.trim())
+
           const payload = isRename
-            ? { id: channel.id, name: values.name.trim() }
-            : { name: values.name.trim() }
+            ? { id: channel.id, name: sanitizedName }
+            : { name: sanitizedName }
 
           Promise.resolve(onSubmit(payload))
             .then(() => {
