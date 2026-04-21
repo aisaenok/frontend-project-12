@@ -18,8 +18,8 @@ import {
 } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import cleanProfanity from '../utils/cleanProfanity.js'
-import { useAuth } from '../contexts/AuthContext.jsx'
-import { useChatApi } from '../contexts/ChatApiContext.jsx'
+import { useAuth } from '../contexts/useAuth.js'
+import { useChatApi } from '../contexts/useChatApi.js'
 import routes from '../routes.js'
 import { fetchChatData, setCurrentChannelId } from '../slices/chatSlice.js'
 import { showModal } from '../slices/modalSlice.js'
@@ -197,11 +197,13 @@ function ChatPage() {
                       </Button>
 
                       <Dropdown.Toggle
-                        aria-label={t('modals.channelManagement')}
                         split
                         variant={channel.id === currentChannelId ? 'secondary' : 'light'}
                         className="rounded-0 border-0"
-                      />
+                        aria-label={t('modals.channelManagement')}
+                      >
+                        <span className="visually-hidden">{t('modals.channelManagement')}</span>
+                      </Dropdown.Toggle>
 
                       <Dropdown.Menu>
                         <Dropdown.Item onClick={() => openRenameModal(channel)}>
@@ -253,6 +255,7 @@ function ChatPage() {
               <Form onSubmit={handleMessageSubmit}>
                 <div className="d-flex gap-2">
                   <Form.Control
+                    aria-label={t('chat.newMessage')}
                     autoComplete="off"
                     ref={messageInputRef}
                     type="text"

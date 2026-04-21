@@ -6,7 +6,7 @@ import * as yup from 'yup'
 import { Button, Container, Card, Alert } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { signupRequest } from '../api.js'
-import { useAuth } from '../contexts/AuthContext.jsx'
+import { useAuth } from '../contexts/useAuth.js'
 import routes from '../routes.js'
 
 function SignupPage() {

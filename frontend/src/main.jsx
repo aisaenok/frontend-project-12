@@ -11,8 +11,8 @@ import App from './App.jsx'
 import store from './app/store.js'
 import initI18n from './i18n.js'
 import rollbarConfig from './rollbar.js'
-import { AuthProvider } from './contexts/AuthContext.jsx'
-import { ChatApiProvider } from './contexts/ChatApiContext.jsx'
+import { AuthProvider } from './contexts/AuthProvider.jsx'
+import { ChatApiProvider } from './contexts/ChatApiProvider.jsx'
 
 initI18n().then((i18n) => {
   ReactDOM.createRoot(document.getElementById('root')).render(

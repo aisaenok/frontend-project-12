@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Navbar, Container, Button } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import { useAuth } from '../contexts/AuthContext.jsx'
+import { useAuth } from '../contexts/useAuth.js'
 import routes from '../routes.js'
 
 function Header() {

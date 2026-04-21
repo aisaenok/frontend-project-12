@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 import { logIn, logOut } from '../slices/authSlice.js'
 import {
@@ -7,8 +7,7 @@ import {
   removeToken,
   removeUsername,
 } from '../utils/auth.js'
-
-const AuthContext = createContext(null)
+import { AuthContext } from './AuthContext.js'
 
 export function AuthProvider({ children }) {
   const dispatch = useDispatch()
@@ -36,15 +35,4 @@ export function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   )
-}
-
-// eslint-disable-next-line react-refresh/only-export-components
-export function useAuth() {
-  const context = useContext(AuthContext)
-
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider')
-  }
-
-  return context
 }

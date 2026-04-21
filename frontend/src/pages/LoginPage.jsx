@@ -5,7 +5,7 @@ import { Formik, Form, Field } from 'formik'
 import { Button, Container, Card, Alert } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { loginRequest } from '../api.js'
-import { useAuth } from '../contexts/AuthContext.jsx'
+import { useAuth } from '../contexts/useAuth.js'
 import routes from '../routes.js'
 
 function LoginPage() {
@@ -100,7 +100,7 @@ function LoginPage() {
         <Card.Footer className="text-center">
           {t('auth.noAccount')}
           {' '}
-          <Link to={routes.signupPath()}>{t('auth.signupSubmit')}</Link>
+          <Link to={routes.signupPath()}>{t('auth.signup')}</Link>
         </Card.Footer>
       </Card>
     </Container>

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 import {
   connectSocket,
@@ -9,8 +9,7 @@ import {
   removeChannelRequest,
   renameChannelRequest,
 } from '../socket.js'
-
-const ChatApiContext = createContext(null)
+import { ChatApiContext } from './ChatApiContext.js'
 
 export function ChatApiProvider({ children }) {
   const dispatch = useDispatch()
@@ -37,15 +36,4 @@ export function ChatApiProvider({ children }) {
       {children}
     </ChatApiContext.Provider>
   )
-}
-
-// eslint-disable-next-line react-refresh/only-export-components
-export function useChatApi() {
-  const context = useContext(ChatApiContext)
-
-  if (!context) {
-    throw new Error('useChatApi must be used within ChatApiProvider')
-  }
-
-  return context
 }

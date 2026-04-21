@@ -9,7 +9,7 @@ import { toast } from 'react-toastify'
 import cleanProfanity from '../utils/cleanProfanity.js'
 import { hideModal, resetModal } from '../slices/modalSlice.js'
 import { channelAdded, channelRemoved, channelRenamed, setCurrentChannelId } from '../slices/chatSlice.js'
-import { useChatApi } from '../contexts/ChatApiContext.jsx'
+import { useChatApi } from '../contexts/useChatApi.js'
 
 function ChannelModal() {
   const dispatch = useDispatch()

@@ -1,6 +1,7 @@
 import filter from 'leo-profanity'
 
-filter.loadDictionary('ru')
+filter.loadDictionary()
+filter.add(filter.getDictionary('ru'))
 
 const cleanProfanity = text => filter.clean(text)
 
