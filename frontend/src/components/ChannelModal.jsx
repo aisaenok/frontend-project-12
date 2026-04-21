@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 import { Formik } from 'formik'
 import * as yup from 'yup'
+import { useTranslation } from 'react-i18next'
 
 function ChannelModal({
   show,
@@ -11,9 +12,14 @@ function ChannelModal({
   onHide,
   onSubmit,
 }) {
+  const { t } = useTranslation()
   const isRemove = type === 'remove'
   const isRename = type === 'rename'
-  const title = isRemove ? 'Удалить канал' : isRename ? 'Переименовать канал' : 'Добавить канал'
+  const title = isRemove
+    ? t('modals.removeChannel')
+    : isRename
+      ? t('modals.renameChannel')
+      : t('modals.addChannel')
 
   const channelNames = channels.map(({ name }) => name)
   const filteredNames = isRename
@@ -24,11 +30,11 @@ function ChannelModal({
     name: yup
       .string()
       .trim()
-      .required('Обязательное поле')
-      .min(3, 'От 3 до 20 символов')
-      .max(20, 'От 3 до 20 символов')
-      .notOneOf(filteredNames, 'Должно быть уникальным'),
-  }), [filteredNames])
+      .required(t('common.required'))
+      .min(3, t('modals.channelNameLength'))
+      .max(20, t('modals.channelNameLength'))
+      .notOneOf(filteredNames, t('modals.uniqueChannelName')),
+  }), [filteredNames, t])
 
   const initialValues = {
     name: isRename ? channel?.name ?? '' : '',
@@ -40,16 +46,16 @@ function ChannelModal({
         <Modal.Header closeButton>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Уверены?</Modal.Body>
+        <Modal.Body>{t('modals.confirmRemove')}</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={onHide}>
-            Отменить
+            {t('common.cancel')}
           </Button>
           <Button
             variant="danger"
             onClick={() => onSubmit({ id: channel.id })}
           >
-            Удалить
+            {t('common.remove')}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -103,10 +109,10 @@ function ChannelModal({
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={onHide}>
-                Отменить
+                {t('common.cancel')}
               </Button>
               <Button type="submit" variant="primary" disabled={isSubmitting}>
-                Отправить
+                {t('common.submit')}
               </Button>
             </Modal.Footer>
           </Form>

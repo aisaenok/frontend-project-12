@@ -1,0 +1,47 @@
+export default {
+  translation: {
+    common: {
+      appName: 'Hexlet Chat',
+      logout: 'Выйти',
+      cancel: 'Отменить',
+      submit: 'Отправить',
+      remove: 'Удалить',
+      rename: 'Переименовать',
+      required: 'Обязательное поле',
+      networkError: 'Ошибка сети',
+    },
+    auth: {
+      login: 'Войти',
+      signup: 'Регистрация',
+      username: 'Ваш ник',
+      usernameFull: 'Имя пользователя',
+      password: 'Пароль',
+      confirmPassword: 'Подтвердите пароль',
+      noAccount: 'Нет аккаунта?',
+      hasAccount: 'Уже есть аккаунт?',
+      loginError: 'Неверные имя пользователя или пароль',
+      signupError: 'Пользователь с таким именем уже существует',
+      usernameLength: 'От 3 до 20 символов',
+      passwordLength: 'Не менее 6 символов',
+      passwordsMustMatch: 'Пароли должны совпадать',
+    },
+    chat: {
+      channels: 'Каналы',
+      messagePlaceholder: 'Введите сообщение...',
+      send: 'Отправить',
+      loadError: 'Не удалось загрузить данные чата',
+      sendError: 'Не удалось отправить сообщение',
+    },
+    modals: {
+      addChannel: 'Добавить канал',
+      renameChannel: 'Переименовать канал',
+      removeChannel: 'Удалить канал',
+      confirmRemove: 'Уверены?',
+      uniqueChannelName: 'Должно быть уникальным',
+      channelNameLength: 'От 3 до 20 символов',
+    },
+    notFound: {
+      title: '404 - Страница не найдена',
+    },
+  },
+}

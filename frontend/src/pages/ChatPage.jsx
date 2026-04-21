@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -43,6 +44,8 @@ function ChatPage() {
   const [modalChannel, setModalChannel] = useState(null)
 
   const username = useSelector(state => state.auth.username)
+
+  const { t } = useTranslation()
 
   const {
     channels,
@@ -195,7 +198,7 @@ function ChatPage() {
     return (
       <Container className="mt-4">
         <Alert variant="danger">
-          Не удалось загрузить данные чата
+          {t('chat.loadError')}
         </Alert>
       </Container>
     )
@@ -208,7 +211,7 @@ function ChatPage() {
           <Col xs={4} md={3} className="border-end">
             <Card className="h-100">
               <Card.Header className="d-flex justify-content-between align-items-center">
-                <span>Каналы</span>
+                <span>{t('chat.channels')}</span>
                 <Button variant="outline-primary" size="sm" onClick={openAddModal}>
                   +
                 </Button>
@@ -289,7 +292,7 @@ function ChatPage() {
               <Card.Footer>
                 {sendError && (
                   <Alert variant="danger" className="mb-2">
-                    Не удалось отправить сообщение
+                    {t('chat.sendError')}
                   </Alert>
                 )}
 
@@ -297,13 +300,13 @@ function ChatPage() {
                   <div className="d-flex gap-2">
                     <Form.Control
                       type="text"
-                      placeholder="Введите сообщение..."
+                      placeholder={t('chat.messagePlaceholder')}
                       value={messageBody}
                       onChange={event => setMessageBody(event.target.value)}
                       disabled={isSending}
                     />
                     <Button type="submit" disabled={isSending}>
-                      Отправить
+                      {t('chat.send')}
                     </Button>
                   </div>
                 </Form>

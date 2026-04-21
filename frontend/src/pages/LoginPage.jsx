@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { Formik, Form, Field } from 'formik'
 import { Button, Container, Card, Alert } from 'react-bootstrap'
+import { useTranslation } from 'react-i18next'
 import { setToken, setUsername } from '../utils/auth.js'
 import { logIn } from '../slices/authSlice.js'
 import { loginRequest } from '../api.js'
@@ -12,6 +13,7 @@ function LoginPage() {
   const dispatch = useDispatch()
   const token = useSelector(state => state.auth.token)
   const [authFailed, setAuthFailed] = useState(false)
+  const { t } = useTranslation()
 
   if (token) {
     return <Navigate to="/" replace />
@@ -46,11 +48,11 @@ function LoginPage() {
     <Container className="h-100 d-flex justify-content-center align-items-center">
       <Card className="shadow-sm" style={{ width: '24rem' }}>
         <Card.Body>
-          <Card.Title className="text-center mb-4">Войти</Card.Title>
+          <Card.Title className="text-center mb-4">{t('auth.login')}</Card.Title>
 
           {authFailed && (
             <Alert variant="danger">
-              Неверные имя пользователя или пароль
+              {t('auth.loginError')}
             </Alert>
           )}
 
@@ -62,7 +64,7 @@ function LoginPage() {
               <Form>
                 <div className="mb-3">
                   <label htmlFor="username" className="form-label">
-                    Ваш ник
+                    {t('auth.username')}
                   </label>
                   <Field
                     id="username"
@@ -75,7 +77,7 @@ function LoginPage() {
 
                 <div className="mb-3">
                   <label htmlFor="password" className="form-label">
-                    Пароль
+                    {t('auth.password')}
                   </label>
                   <Field
                     id="password"
@@ -92,16 +94,16 @@ function LoginPage() {
                   className="w-100"
                   disabled={isSubmitting}
                 >
-                  Войти
+                  {t('auth.login')}
                 </Button>
               </Form>
             )}
           </Formik>
         </Card.Body>
         <Card.Footer className="text-center">
-          Нет аккаунта?
+          {t('auth.noAccount')}
           {' '}
-          <Link to="/signup">Регистрация</Link>
+          <Link to="/signup">{t('auth.signup')}</Link>
         </Card.Footer>
       </Card>
     </Container>
