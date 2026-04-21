@@ -1,3 +1,4 @@
+import { useRollbar } from '@rollbar/react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
@@ -48,6 +49,8 @@ function ChatPage() {
   const username = useSelector(state => state.auth.username)
 
   const { t } = useTranslation()
+
+  const rollbar = useRollbar()
 
   const {
     channels,
@@ -108,6 +111,8 @@ function ChatPage() {
 
   useEffect(() => {
     if (status === 'failed' && error !== 'unauthorized') {
+      rollbar.error('Chat data loading failed', { error })
+
       toast.error(
         error === 'network'
           ? t('notifications.networkError')
@@ -115,7 +120,7 @@ function ChatPage() {
         { toastId: 'chat-load-error' },
       )
     }
-  }, [status, error, t])
+  }, [status, error, t, rollbar])
 
   const handleMessageSubmit = (event) => {
     event.preventDefault()
@@ -143,6 +148,7 @@ function ChatPage() {
       })
       .catch(() => {
         setSendError(true)
+        rollbar.error('Message sending failed', error)
         toast.error(t('notifications.sendError'), { toastId: 'send-message-error' })
       })
       .finally(() => {
@@ -180,6 +186,7 @@ function ChatPage() {
         toast.success(t('notifications.channelCreated'))
         closeModal()
       }).catch(() => {
+        rollbar.error('Channel create failed', error)
         toast.error(t('notifications.networkError'))
       })
     }
@@ -192,6 +199,7 @@ function ChatPage() {
         toast.success(t('notifications.channelRenamed'))
         closeModal()
       }).catch(() => {
+        rollbar.error('Channel create failed', error)
         toast.error(t('notifications.networkError'))
       })
     }
@@ -202,6 +210,7 @@ function ChatPage() {
         toast.success(t('notifications.channelRemoved'))
         closeModal()
       }).catch(() => {
+        rollbar.error('Channel create failed', error)
         toast.error(t('notifications.networkError'))
       })
     }
