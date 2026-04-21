@@ -1,20 +1,20 @@
 import { useMemo, useState } from 'react'
 import { Navigate, Link, useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { Formik, Form, Field } from 'formik'
 import * as yup from 'yup'
 import { Button, Container, Card, Alert } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { signupRequest } from '../api.js'
-import { setToken, setUsername } from '../utils/auth.js'
-import { logIn } from '../slices/authSlice.js'
+import { useAuth } from '../contexts/AuthContext.jsx'
+import routes from '../routes.js'
 
 function SignupPage() {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
   const token = useSelector(state => state.auth.token)
   const [signupFailed, setSignupFailed] = useState(false)
   const { t } = useTranslation()
+  const auth = useAuth()
 
   const validationSchema = useMemo(() => yup.object({
     username: yup
@@ -33,7 +33,7 @@ function SignupPage() {
   }), [t])
 
   if (token) {
-    return <Navigate to="/" replace />
+    return <Navigate to={routes.chatPath()} replace />
   }
 
   const handleSubmit = (values, { setSubmitting }) => {
@@ -46,15 +46,12 @@ function SignupPage() {
       .then((response) => {
         const { token: authToken, username } = response.data
 
-        setToken(authToken)
-        setUsername(username)
-
-        dispatch(logIn({
+        auth.signIn({
           token: authToken,
           username,
-        }))
+        })
 
-        navigate('/', { replace: true })
+        navigate(routes.chatPath(), { replace: true })
       })
       .catch((error) => {
         if (error.response?.status === 409) {
@@ -134,7 +131,7 @@ function SignupPage() {
                 </div>
 
                 <Button type="submit" variant="primary" className="w-100" disabled={isSubmitting}>
-                  {t('auth.signup')}
+                  {t('auth.signupSubmit')}
                 </Button>
               </Form>
             )}
@@ -144,7 +141,7 @@ function SignupPage() {
         <Card.Footer className="text-center">
           {t('auth.hasAccount')}
           {' '}
-          <Link to="/login">{t('auth.login')}</Link>
+          <Link to={routes.loginPath()}>{t('auth.login')}</Link>
         </Card.Footer>
       </Card>
     </Container>

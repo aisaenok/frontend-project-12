@@ -1,27 +1,25 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { Navbar, Container, Button } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import { logOut } from '../slices/authSlice.js'
-import { removeToken, removeUsername } from '../utils/auth.js'
+import { useAuth } from '../contexts/AuthContext.jsx'
+import routes from '../routes.js'
 
 function Header() {
   const token = useSelector(state => state.auth.token)
-  const dispatch = useDispatch()
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const auth = useAuth()
 
   const handleLogout = () => {
-    removeToken()
-    removeUsername()
-    dispatch(logOut())
-    navigate('/login', { replace: true })
+    auth.signOut()
+    navigate(routes.loginPath(), { replace: true })
   }
 
   return (
     <Navbar bg="white" className="shadow-sm">
       <Container>
-        <Navbar.Brand as={Link} to="/">
+        <Navbar.Brand as={Link} to={routes.chatPath()}>
           {t('common.appName')}
         </Navbar.Brand>
 

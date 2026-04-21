@@ -1,13 +1,19 @@
-import Rollbar from 'rollbar'
+const hasRollbarToken = Boolean(import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN)
 
-const rollbarConfig = {
-  accessToken: import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN,
-  captureUncaught: true,
-  captureUnhandledRejections: true,
-  environment: import.meta.env.VITE_APP_ENV || 'development',
-}
+const rollbarConfig = hasRollbarToken
+  ? {
+      accessToken: import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN,
+      captureUncaught: true,
+      captureUnhandledRejections: true,
+      environment: import.meta.env.VITE_APP_ENV || 'development',
+    }
+  : {
+      enabled: false,
+      captureUncaught: false,
+      captureUnhandledRejections: false,
+      payload: {
+        environment: 'test',
+      },
+    }
 
-const rollbar = new Rollbar(rollbarConfig)
-
-export default rollbar
-export { rollbarConfig }
+export default rollbarConfig
