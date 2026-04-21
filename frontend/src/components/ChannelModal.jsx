@@ -1,26 +1,47 @@
-import { useMemo } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 import { Formik } from 'formik'
 import * as yup from 'yup'
 import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
+import { useRollbar } from '@rollbar/react'
+import { toast } from 'react-toastify'
 import cleanProfanity from '../utils/cleanProfanity.js'
+import { hideModal, resetModal } from '../slices/modalSlice.js'
+import { channelAdded, channelRemoved, channelRenamed, setCurrentChannelId } from '../slices/chatSlice.js'
+import { useChatApi } from '../contexts/ChatApiContext.jsx'
 
-function ChannelModal({
-  show,
-  type,
-  channel,
-  channels,
-  onHide,
-  onSubmit,
-}) {
+function ChannelModal() {
+  const dispatch = useDispatch()
   const { t } = useTranslation()
+  const rollbar = useRollbar()
+  const chatApi = useChatApi()
+
+  const { isOpen, type, extra } = useSelector(state => state.modal)
+  const channels = useSelector(state => state.chat.channels)
+
+  const removeSubmitButtonRef = useRef(null)
+  const [isRemoving, setIsRemoving] = useState(false)
+
+  const channelId = extra?.channelId ?? null
+  const channel = channels.find(item => item.id === channelId) ?? null
+
   const isRemove = type === 'remove'
   const isRename = type === 'rename'
+
   const title = isRemove
     ? t('modals.removeChannel')
     : isRename
       ? t('modals.renameChannel')
       : t('modals.addChannel')
+
+  const closeModal = () => {
+    dispatch(hideModal())
+  }
+
+  const handleExited = () => {
+    dispatch(resetModal())
+  }
 
   const channelNames = channels.map(({ name }) => name)
   const filteredNames = isRename
@@ -41,31 +62,100 @@ function ChannelModal({
     name: isRename ? channel?.name ?? '' : '',
   }
 
+  const handleSubmit = (payload) => {
+    if (type === 'add') {
+      return chatApi.addChannel(payload).then((response) => {
+        const createdChannel = response?.data ?? response
+
+        dispatch(channelAdded(createdChannel))
+        dispatch(setCurrentChannelId(createdChannel.id))
+        toast.success(t('notifications.channelCreated'))
+        closeModal()
+      }).catch((error) => {
+        rollbar.error('Channel create failed', error)
+        toast.error(t('notifications.networkError'))
+      })
+    }
+
+    if (type === 'rename') {
+      return chatApi.renameChannel(payload).then((response) => {
+        const renamedChannel = response?.data ?? response
+
+        dispatch(channelRenamed(renamedChannel))
+        toast.success(t('notifications.channelRenamed'))
+        closeModal()
+      }).catch((error) => {
+        rollbar.error('Channel rename failed', error)
+        toast.error(t('notifications.networkError'))
+      })
+    }
+
+    if (type === 'remove') {
+      return chatApi.removeChannel(payload).then(() => {
+        dispatch(channelRemoved(payload))
+        toast.success(t('notifications.channelRemoved'))
+        closeModal()
+      }).catch((error) => {
+        rollbar.error('Channel remove failed', error)
+        toast.error(t('notifications.networkError'))
+      })
+    }
+
+    return Promise.resolve()
+  }
+
   if (isRemove) {
+    const handleRemoveSubmit = (event) => {
+      event.preventDefault()
+      setIsRemoving(true)
+
+      Promise.resolve(handleSubmit({ id: channel.id }))
+        .finally(() => {
+          setIsRemoving(false)
+        })
+    }
+
     return (
-      <Modal show={show} onHide={onHide} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>{title}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>{t('modals.confirmRemove')}</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={onHide}>
-            {t('common.cancel')}
-          </Button>
-          <Button
-            variant="danger"
-            onClick={() => onSubmit({ id: channel.id })}
-          >
-            {t('common.remove')}
-          </Button>
-        </Modal.Footer>
+      <Modal
+        show={isOpen}
+        onHide={isRemoving ? undefined : closeModal}
+        onEntered={() => {
+          removeSubmitButtonRef.current?.focus()
+        }}
+        onExited={handleExited}
+        centered
+      >
+        <Form onSubmit={handleRemoveSubmit}>
+          <Modal.Header closeButton={!isRemoving}>
+            <Modal.Title>{title}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>{t('modals.confirmRemove')}</Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={closeModal}
+              disabled={isRemoving}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              ref={removeSubmitButtonRef}
+              type="submit"
+              variant="danger"
+              disabled={isRemoving}
+            >
+              {t('common.remove')}
+            </Button>
+          </Modal.Footer>
+        </Form>
       </Modal>
     )
   }
 
   return (
-    <Modal show={show} onHide={onHide} centered>
+    <Modal show={isOpen} onHide={closeModal} centered>
       <Formik
+        enableReinitialize
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={(values, formikHelpers) => {
@@ -75,7 +165,7 @@ function ChannelModal({
             ? { id: channel.id, name: sanitizedName }
             : { name: sanitizedName }
 
-          Promise.resolve(onSubmit(payload))
+          Promise.resolve(handleSubmit(payload))
             .then(() => {
               formikHelpers.resetForm()
             })
@@ -89,10 +179,10 @@ function ChannelModal({
           errors,
           touched,
           handleChange,
-          handleSubmit,
+          handleSubmit: submitForm,
           isSubmitting,
         }) => (
-          <Form noValidate onSubmit={handleSubmit}>
+          <Form noValidate onSubmit={submitForm}>
             <Modal.Header closeButton>
               <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -100,6 +190,7 @@ function ChannelModal({
               <Form.Group>
                 <Form.Label htmlFor="channelName">{t('modals.channelName')}</Form.Label>
                 <Form.Control
+                  id="channelName"
                   name="name"
                   value={values.name}
                   onChange={handleChange}
@@ -112,7 +203,7 @@ function ChannelModal({
               </Form.Group>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={onHide}>
+              <Button variant="secondary" onClick={closeModal}>
                 {t('common.cancel')}
               </Button>
               <Button type="submit" variant="primary" disabled={isSubmitting}>

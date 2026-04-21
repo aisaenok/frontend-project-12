@@ -8,7 +8,7 @@ export default {
       remove: 'Удалить',
       rename: 'Переименовать',
       required: 'Обязательное поле',
-      networkError: 'Ошибка сети',
+      networkError: 'Ошибка соединения',
     },
     auth: {
       login: 'Войти',
@@ -28,6 +28,8 @@ export default {
     },
     chat: {
       channels: 'Каналы',
+      fallbackTitle: 'Чат',
+      messagesCount: 'сообщений',
       messagePlaceholder: 'Введите сообщение...',
       send: 'Отправить',
       loadError: 'Не удалось загрузить данные чата',
@@ -37,7 +39,9 @@ export default {
       addChannel: 'Добавить канал',
       channelManagement: 'Управление каналом',
       channelName: 'Имя канала',
+      renameAction: 'Переименовать',
       renameChannel: 'Переименовать канал',
+      removeAction: 'Удалить',
       removeChannel: 'Удалить канал',
       confirmRemove: 'Уверены?',
       uniqueChannelName: 'Должно быть уникальным',

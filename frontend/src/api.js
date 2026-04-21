@@ -1,10 +1,11 @@
 import axios from 'axios'
+import routes from './routes.js'
 
-export const loginRequest = credentials => axios.post('/api/v1/login', credentials)
+export const loginRequest = credentials => axios.post(routes.loginApiPath(), credentials)
 
-export const signupRequest = credentials => axios.post('/api/v1/signup', credentials)
+export const signupRequest = credentials => axios.post(routes.signupApiPath(), credentials)
 
-export const fetchChatDataRequest = token => axios.get('/api/v1/data', {
+export const fetchChatDataRequest = token => axios.get(routes.dataApiPath(), {
   headers: {
     Authorization: `Bearer ${token}`,
   },

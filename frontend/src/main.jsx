@@ -10,15 +10,21 @@ import './index.css'
 import App from './App.jsx'
 import store from './app/store.js'
 import initI18n from './i18n.js'
-import rollbar, { rollbarConfig } from './rollbar.js'
+import rollbarConfig from './rollbar.js'
+import { AuthProvider } from './contexts/AuthContext.jsx'
+import { ChatApiProvider } from './contexts/ChatApiContext.jsx'
 
 const renderApp = i18n => (
   <React.StrictMode>
     <Provider store={store}>
       <I18nextProvider i18n={i18n}>
         <BrowserRouter>
-          <App />
-          <ToastContainer />
+          <AuthProvider>
+            <ChatApiProvider>
+              <App />
+              <ToastContainer />
+            </ChatApiProvider>
+          </AuthProvider>
         </BrowserRouter>
       </I18nextProvider>
     </Provider>
@@ -31,7 +37,7 @@ initI18n().then((i18n) => {
 
   if (rollbarConfig.accessToken) {
     root.render(
-      <RollbarProvider config={rollbarConfig} instance={rollbar}>
+      <RollbarProvider config={rollbarConfig}>
         <ErrorBoundary>
           {app}
         </ErrorBoundary>

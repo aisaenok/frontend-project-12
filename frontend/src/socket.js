@@ -1,3 +1,4 @@
+import { messageReceived, channelAdded, channelRemoved, channelRenamed } from './slices/chatSlice.js'
 import { io } from 'socket.io-client'
 
 const socket = io('/', {
@@ -18,24 +19,28 @@ export const disconnectSocket = () => {
   }
 }
 
-export const subscribeToNewMessages = (handler) => {
-  socket.on('newMessage', handler)
-  return () => socket.off('newMessage', handler)
-}
+const onNewMessage = dispatch => payload => dispatch(messageReceived(payload))
+const onNewChannel = dispatch => payload => dispatch(channelAdded(payload))
+const onRemoveChannel = dispatch => payload => dispatch(channelRemoved(payload))
+const onRenameChannel = dispatch => payload => dispatch(channelRenamed(payload))
 
-export const subscribeToNewChannels = (handler) => {
-  socket.on('newChannel', handler)
-  return () => socket.off('newChannel', handler)
-}
+export const initChatEvents = (dispatch) => {
+  const messageHandler = onNewMessage(dispatch)
+  const channelHandler = onNewChannel(dispatch)
+  const removeHandler = onRemoveChannel(dispatch)
+  const renameHandler = onRenameChannel(dispatch)
 
-export const subscribeToRemovedChannels = (handler) => {
-  socket.on('removeChannel', handler)
-  return () => socket.off('removeChannel', handler)
-}
+  socket.on('newMessage', messageHandler)
+  socket.on('newChannel', channelHandler)
+  socket.on('removeChannel', removeHandler)
+  socket.on('renameChannel', renameHandler)
 
-export const subscribeToRenamedChannels = (handler) => {
-  socket.on('renameChannel', handler)
-  return () => socket.off('renameChannel', handler)
+  return () => {
+    socket.off('newMessage', messageHandler)
+    socket.off('newChannel', channelHandler)
+    socket.off('removeChannel', removeHandler)
+    socket.off('renameChannel', renameHandler)
+  }
 }
 
 const emitWithAck = (event, payload) => new Promise((resolve, reject) => {

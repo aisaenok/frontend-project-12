@@ -1,22 +1,22 @@
 import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { Formik, Form, Field } from 'formik'
 import { Button, Container, Card, Alert } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
-import { setToken, setUsername } from '../utils/auth.js'
-import { logIn } from '../slices/authSlice.js'
 import { loginRequest } from '../api.js'
+import { useAuth } from '../contexts/AuthContext.jsx'
+import routes from '../routes.js'
 
 function LoginPage() {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
   const token = useSelector(state => state.auth.token)
   const [authFailed, setAuthFailed] = useState(false)
   const { t } = useTranslation()
+  const auth = useAuth()
 
   if (token) {
-    return <Navigate to="/" replace />
+    return <Navigate to={routes.chatPath()} replace />
   }
 
   const handleSubmit = (values, { setSubmitting }) => {
@@ -26,15 +26,12 @@ function LoginPage() {
       .then((response) => {
         const { token: authToken } = response.data
 
-        setToken(authToken)
-        setUsername(values.username)
-
-        dispatch(logIn({
+        auth.signIn({
           token: authToken,
           username: values.username,
-        }))
+        })
 
-        navigate('/', { replace: true })
+        navigate(routes.chatPath(), { replace: true })
       })
       .catch(() => {
         setAuthFailed(true)
@@ -103,7 +100,7 @@ function LoginPage() {
         <Card.Footer className="text-center">
           {t('auth.noAccount')}
           {' '}
-          <Link to="/signup">{t('auth.signupSubmit')}</Link>
+          <Link to={routes.signupPath()}>{t('auth.signupSubmit')}</Link>
         </Card.Footer>
       </Card>
     </Container>
