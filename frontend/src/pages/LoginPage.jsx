@@ -103,7 +103,7 @@ function LoginPage() {
         <Card.Footer className="text-center">
           {t('auth.noAccount')}
           {' '}
-          <Link to="/signup">{t('auth.signup')}</Link>
+          <Link to="/signup">{t('auth.signupSubmit')}</Link>
         </Card.Footer>
       </Card>
     </Container>

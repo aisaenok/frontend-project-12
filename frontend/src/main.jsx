@@ -12,21 +12,33 @@ import store from './app/store.js'
 import initI18n from './i18n.js'
 import rollbar, { rollbarConfig } from './rollbar.js'
 
+const renderApp = i18n => (
+  <React.StrictMode>
+    <Provider store={store}>
+      <I18nextProvider i18n={i18n}>
+        <BrowserRouter>
+          <App />
+          <ToastContainer />
+        </BrowserRouter>
+      </I18nextProvider>
+    </Provider>
+  </React.StrictMode>
+)
+
 initI18n().then((i18n) => {
-  ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-      <RollbarProvider instance={rollbar} config={rollbarConfig}>
+  const app = renderApp(i18n)
+  const root = ReactDOM.createRoot(document.getElementById('root'))
+
+  if (rollbarConfig.accessToken) {
+    root.render(
+      <RollbarProvider config={rollbarConfig} instance={rollbar}>
         <ErrorBoundary>
-          <Provider store={store}>
-            <I18nextProvider i18n={i18n}>
-              <BrowserRouter>
-                <App />
-                <ToastContainer />
-              </BrowserRouter>
-            </I18nextProvider>
-          </Provider>
+          {app}
         </ErrorBoundary>
-      </RollbarProvider>
-    </React.StrictMode>,
-  )
+      </RollbarProvider>,
+    )
+    return
+  }
+
+  root.render(app)
 })

@@ -13,6 +13,7 @@ export default {
     auth: {
       login: 'Войти',
       signup: 'Регистрация',
+      signupSubmit: 'Зарегистрироваться',
       username: 'Ваш ник',
       usernameFull: 'Имя пользователя',
       password: 'Пароль',
@@ -34,6 +35,8 @@ export default {
     },
     modals: {
       addChannel: 'Добавить канал',
+      channelManagement: 'Управление каналом',
+      channelName: 'Имя канала',
       renameChannel: 'Переименовать канал',
       removeChannel: 'Удалить канал',
       confirmRemove: 'Уверены?',
@@ -45,7 +48,7 @@ export default {
     },
     notifications: {
       loadError: 'Не удалось загрузить данные чата',
-      networkError: 'Ошибка сети',
+      networkError: 'Ошибка соединения',
       sendError: 'Не удалось отправить сообщение',
       channelCreated: 'Канал создан',
       channelRenamed: 'Канал переименован',

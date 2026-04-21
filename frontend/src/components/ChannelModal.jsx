@@ -98,6 +98,7 @@ function ChannelModal({
             </Modal.Header>
             <Modal.Body>
               <Form.Group>
+                <Form.Label htmlFor="channelName">{t('modals.channelName')}</Form.Label>
                 <Form.Control
                   name="name"
                   value={values.name}

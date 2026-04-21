@@ -277,6 +277,7 @@ function ChatPage() {
                         </Button>
 
                         <Dropdown.Toggle
+                          aria-label={t('modals.channelManagement')}
                           split
                           variant={channel.id === currentChannelId ? 'secondary' : 'light'}
                           className="rounded-0 border-0"
