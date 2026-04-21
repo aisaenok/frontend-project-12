@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { I18nextProvider } from 'react-i18next'
+import { ToastContainer } from 'react-toastify'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './index.css'
 import App from './App.jsx'
@@ -16,6 +17,7 @@ initI18n().then((i18n) => {
         <I18nextProvider i18n={i18n}>
           <BrowserRouter>
             <App />
+            <ToastContainer />
           </BrowserRouter>
         </I18nextProvider>
       </Provider>

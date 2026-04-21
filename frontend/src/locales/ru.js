@@ -43,5 +43,13 @@ export default {
     notFound: {
       title: '404 - Страница не найдена',
     },
+    notifications: {
+      loadError: 'Не удалось загрузить данные чата',
+      networkError: 'Ошибка сети',
+      sendError: 'Не удалось отправить сообщение',
+      channelCreated: 'Канал создан',
+      channelRenamed: 'Канал переименован',
+      channelRemoved: 'Канал удалён',
+    },
   },
 }

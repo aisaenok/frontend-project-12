@@ -15,6 +15,7 @@ import {
   Dropdown,
   ButtonGroup,
 } from 'react-bootstrap'
+import { toast } from 'react-toastify'
 import { fetchChatData, messageReceived, setCurrentChannelId, channelAdded, channelRemoved, channelRenamed } from '../slices/chatSlice.js'
 import { logOut } from '../slices/authSlice.js'
 import { removeToken, removeUsername } from '../utils/auth.js'
@@ -104,6 +105,17 @@ function ChatPage() {
     }
   }, [dispatch])
 
+  useEffect(() => {
+    if (status === 'failed' && error !== 'unauthorized') {
+      toast.error(
+        error === 'network'
+          ? t('notifications.networkError')
+          : t('notifications.loadError'),
+        { toastId: 'chat-load-error' },
+      )
+    }
+  }, [status, error, t])
+
   const handleMessageSubmit = (event) => {
     event.preventDefault()
 
@@ -128,6 +140,7 @@ function ChatPage() {
       })
       .catch(() => {
         setSendError(true)
+        toast.error(t('notifications.sendError'), { toastId: 'send-message-error' })
       })
       .finally(() => {
         setIsSending(false)
@@ -157,13 +170,14 @@ function ChatPage() {
   const handleModalSubmit = (payload) => {
     if (modalType === 'add') {
       return addChannel(payload).then((response) => {
-        console.log('addChannel ack raw', response)
-        console.log('addChannel ack data', response?.data ?? response)
         const createdChannel = response?.data ?? response
 
         dispatch(channelAdded(createdChannel))
         dispatch(setCurrentChannelId(createdChannel.id))
+        toast.success(t('notifications.channelCreated'))
         closeModal()
+      }).catch(() => {
+        toast.error(t('notifications.networkError'))
       })
     }
 
@@ -172,14 +186,20 @@ function ChatPage() {
         const renamedChannel = response?.data ?? response
 
         dispatch(channelRenamed(renamedChannel))
+        toast.success(t('notifications.channelRenamed'))
         closeModal()
+      }).catch(() => {
+        toast.error(t('notifications.networkError'))
       })
     }
 
     if (modalType === 'remove') {
       return removeChannelRequest(payload).then(() => {
         dispatch(channelRemoved(payload))
+        toast.success(t('notifications.channelRemoved'))
         closeModal()
+      }).catch(() => {
+        toast.error(t('notifications.networkError'))
       })
     }
 
