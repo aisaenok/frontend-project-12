@@ -20,9 +20,9 @@ import { toast } from 'react-toastify'
 import cleanProfanity from '../utils/cleanProfanity.js'
 import { useAuth } from '../contexts/useAuth.js'
 import { useChatApi } from '../contexts/useChatApi.js'
-import routes from '../routes.js'
-import { fetchChatData, setCurrentChannelId } from '../slices/chatSlice.js'
-import { showModal } from '../slices/modalSlice.js'
+import routes from '../utils/routes.js'
+import { fetchChatData, setCurrentChannelId } from '../app/chatSlice.js'
+import { showModal } from '../app/modalSlice.js'
 
 function ChatPage() {
   const dispatch = useDispatch()
@@ -232,7 +232,7 @@ function ChatPage() {
               </div>
             </Card.Header>
 
-            <Card.Body className="overflow-auto flex-grow-1" style={{ minHeight: 0 }}>
+            <Card.Body className="overflow-auto flex-grow-1">
               <ListGroup variant="flush">
                 {currentMessages.map(message => (
                   <ListGroup.Item key={message.id} className="border-0 px-0 text-break">

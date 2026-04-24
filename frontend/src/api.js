@@ -1,5 +1,5 @@
 import axios from 'axios'
-import routes from './routes.js'
+import routes from './utils/routes.js'
 
 export const loginRequest = credentials => axios.post(routes.loginApiPath(), credentials)
 

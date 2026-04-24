@@ -6,7 +6,7 @@ import { Button, Container, Card, Alert } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { loginRequest } from '../api.js'
 import { useAuth } from '../contexts/useAuth.js'
-import routes from '../routes.js'
+import routes from '../utils/routes.js'
 
 function LoginPage() {
   const navigate = useNavigate()
@@ -42,67 +42,69 @@ function LoginPage() {
   }
 
   return (
-    <Container className="h-100 d-flex justify-content-center align-items-center">
-      <Card className="shadow-sm" style={{ width: '24rem' }}>
-        <Card.Body>
-          <Card.Title className="text-center mb-4">{t('auth.login')}</Card.Title>
+    <Container fluid className="h-100 d-flex justify-content-center align-items-center">
+      <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
+        <Card className="shadow-sm">
+          <Card.Body>
+            <Card.Title className="text-center mb-4">{t('auth.login')}</Card.Title>
 
-          {authFailed && (
-            <Alert variant="danger">
-              {t('auth.loginError')}
-            </Alert>
-          )}
-
-          <Formik
-            initialValues={{ username: '', password: '' }}
-            onSubmit={handleSubmit}
-          >
-            {({ isSubmitting }) => (
-              <Form>
-                <div className="mb-3">
-                  <label htmlFor="username" className="form-label">
-                    {t('auth.username')}
-                  </label>
-                  <Field
-                    id="username"
-                    name="username"
-                    type="text"
-                    className="form-control"
-                    autoComplete="username"
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label htmlFor="password" className="form-label">
-                    {t('auth.password')}
-                  </label>
-                  <Field
-                    id="password"
-                    name="password"
-                    type="password"
-                    className="form-control"
-                    autoComplete="current-password"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className="w-100"
-                  disabled={isSubmitting}
-                >
-                  {t('auth.login')}
-                </Button>
-              </Form>
+            {authFailed && (
+              <Alert variant="danger">
+                {t('auth.loginError')}
+              </Alert>
             )}
-          </Formik>
-        </Card.Body>
-        <Card.Footer className="text-center">
-          {t('auth.noAccount')}
-          {' '}
-          <Link to={routes.signupPath()}>{t('auth.signup')}</Link>
-        </Card.Footer>
-      </Card>
+
+            <Formik
+              initialValues={{ username: '', password: '' }}
+              onSubmit={handleSubmit}
+            >
+              {({ isSubmitting }) => (
+                <Form>
+                  <div className="mb-3">
+                    <label htmlFor="username" className="form-label">
+                      {t('auth.username')}
+                    </label>
+                    <Field
+                      id="username"
+                      name="username"
+                      type="text"
+                      className="form-control"
+                      autoComplete="username"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="password" className="form-label">
+                      {t('auth.password')}
+                    </label>
+                    <Field
+                      id="password"
+                      name="password"
+                      type="password"
+                      className="form-control"
+                      autoComplete="current-password"
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="w-100"
+                    disabled={isSubmitting}
+                  >
+                    {t('auth.login')}
+                  </Button>
+                </Form>
+              )}
+            </Formik>
+          </Card.Body>
+          <Card.Footer className="text-center">
+            {t('auth.noAccount')}
+            {' '}
+            <Link to={routes.signupPath()}>{t('auth.signup')}</Link>
+          </Card.Footer>
+        </Card>
+      </div>
     </Container>
   )
 }

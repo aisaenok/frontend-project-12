@@ -8,7 +8,7 @@ import {
   addChannel,
   removeChannelRequest,
   renameChannelRequest,
-} from '../socket.js'
+} from '../utils/socket.js'
 import { ChatApiContext } from './ChatApiContext.js'
 
 export function ChatApiProvider({ children }) {

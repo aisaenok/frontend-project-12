@@ -3,7 +3,7 @@ import { Navbar, Container, Button } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/useAuth.js'
-import routes from '../routes.js'
+import routes from '../utils/routes.js'
 
 function Header() {
   const token = useSelector(state => state.auth.token)
@@ -18,7 +18,7 @@ function Header() {
 
   return (
     <Navbar bg="white" className="shadow-sm">
-      <Container>
+      <Container fluid className="px-3">
         <Navbar.Brand as={Link} to={routes.chatPath()}>
           {t('common.appName')}
         </Navbar.Brand>

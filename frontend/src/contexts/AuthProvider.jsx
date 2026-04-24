@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useDispatch } from 'react-redux'
-import { logIn, logOut } from '../slices/authSlice.js'
+import { logIn, logOut } from '../app/authSlice.js'
 import {
   setToken,
   setUsername,

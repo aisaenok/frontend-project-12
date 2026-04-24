@@ -1,4 +1,4 @@
-import { messageReceived, channelAdded, channelRemoved, channelRenamed } from './slices/chatSlice.js'
+import { messageReceived, channelAdded, channelRemoved, channelRenamed } from '../app/chatSlice.js'
 import { io } from 'socket.io-client'
 
 const socket = io('/', {

@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import routes from '../routes.js'
+import routes from '../utils/routes.js'
 
 function ProtectedRoute({ children }) {
   const token = useSelector(state => state.auth.token)
