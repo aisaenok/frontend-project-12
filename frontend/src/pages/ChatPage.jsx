@@ -34,6 +34,7 @@ function ChatPage() {
 
   const messageInputRef = useRef(null)
   const messagesEndRef = useRef(null)
+  const shouldScrollAfterSendRef = useRef(false)
 
   const username = useSelector(state => state.auth.username)
 
@@ -55,6 +56,7 @@ function ChatPage() {
 
   const currentChannel = channels.find(channel => channel.id === currentChannelId)
   const currentMessages = messages.filter(message => message.channelId === currentChannelId)
+  const lastMessageId = currentMessages.at(-1)?.id
 
   useEffect(() => {
     if (status === 'idle') {
@@ -73,6 +75,13 @@ function ChatPage() {
     messageInputRef.current?.focus()
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [currentChannelId])
+
+  useEffect(() => {
+    if (shouldScrollAfterSendRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+      shouldScrollAfterSendRef.current = false
+    }
+  }, [lastMessageId])
 
   useEffect(() => {
     if (status === 'failed' && error !== 'unauthorized') {
@@ -107,17 +116,27 @@ function ChatPage() {
       username,
     }
 
+    let sentSuccessfully = false
+
     chatApi.sendMessage(payload)
       .then(() => {
+        sentSuccessfully = true
         setMessageBody('')
+        shouldScrollAfterSendRef.current = true
       })
-      .catch((error) => {
+      .catch((sendErrorObject) => {
         setSendError(true)
-        rollbar.error('Message sending failed', error)
+        rollbar.error('Message sending failed', sendErrorObject)
         toast.error(t('notifications.sendError'), { toastId: 'send-message-error' })
       })
       .finally(() => {
         setIsSending(false)
+
+        if (sentSuccessfully) {
+          requestAnimationFrame(() => {
+            messageInputRef.current?.focus()
+          })
+        }
       })
   }
 

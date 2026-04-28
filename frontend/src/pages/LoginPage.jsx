@@ -1,12 +1,13 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { Formik, Form, Field } from 'formik'
 import { Button, Container, Card, Alert } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
-import { loginRequest } from '../api.js'
 import { useAuth } from '../contexts/useAuth.js'
+import { loginRequest } from '../api.js'
 import routes from '../utils/routes.js'
+import buildLoginSchema from '../validation/buildLoginSchema.js'
 
 function LoginPage() {
   const navigate = useNavigate()
@@ -14,6 +15,8 @@ function LoginPage() {
   const [authFailed, setAuthFailed] = useState(false)
   const { t } = useTranslation()
   const auth = useAuth()
+
+  const validationSchema = useMemo(() => buildLoginSchema(t), [t])
 
   if (token) {
     return <Navigate to={routes.chatPath()} replace />
@@ -56,9 +59,10 @@ function LoginPage() {
 
             <Formik
               initialValues={{ username: '', password: '' }}
+              validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
-              {({ isSubmitting }) => (
+              {({ errors, touched, isSubmitting }) => (
                 <Form>
                   <div className="mb-3">
                     <label htmlFor="username" className="form-label">
@@ -68,9 +72,12 @@ function LoginPage() {
                       id="username"
                       name="username"
                       type="text"
-                      className="form-control"
-                      autoComplete="username"
+                      className={`form-control ${touched.username && errors.username ? 'is-invalid' : ''}`}
+                      autoComplete="off"
                     />
+                    {touched.username && errors.username && (
+                      <div className="invalid-feedback">{errors.username}</div>
+                    )}
                   </div>
 
                   <div className="mb-3">
@@ -81,9 +88,12 @@ function LoginPage() {
                       id="password"
                       name="password"
                       type="password"
-                      className="form-control"
-                      autoComplete="current-password"
+                      className={`form-control ${touched.password && errors.password ? 'is-invalid' : ''}`}
+                      autoComplete="off"
                     />
+                    {touched.password && errors.password && (
+                      <div className="invalid-feedback">{errors.password}</div>
+                    )}
                   </div>
 
                   <Button
@@ -98,6 +108,7 @@ function LoginPage() {
               )}
             </Formik>
           </Card.Body>
+
           <Card.Footer className="text-center">
             {t('auth.noAccount')}
             {' '}

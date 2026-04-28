@@ -78,7 +78,7 @@ function SignupPage() {
                       name="username"
                       type="text"
                       className={`form-control ${touched.username && errors.username ? 'is-invalid' : ''}`}
-                      autoComplete="username"
+                      autoComplete="off"
                     />
                     {touched.username && errors.username && (
                       <div className="invalid-feedback">{errors.username}</div>
@@ -94,7 +94,7 @@ function SignupPage() {
                       name="password"
                       type="password"
                       className={`form-control ${touched.password && errors.password ? 'is-invalid' : ''}`}
-                      autoComplete="new-password"
+                      autoComplete="off"
                     />
                     {touched.password && errors.password && (
                       <div className="invalid-feedback">{errors.password}</div>
@@ -110,7 +110,7 @@ function SignupPage() {
                       name="confirmPassword"
                       type="password"
                       className={`form-control ${touched.confirmPassword && errors.confirmPassword ? 'is-invalid' : ''}`}
-                      autoComplete="new-password"
+                      autoComplete="off"
                     />
                     {touched.confirmPassword && errors.confirmPassword && (
                       <div className="invalid-feedback">{errors.confirmPassword}</div>

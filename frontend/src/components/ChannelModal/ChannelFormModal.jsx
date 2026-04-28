@@ -61,6 +61,7 @@ function ChannelFormModal({
                   {t('modals.channelName')}
                 </Form.Label>
                 <Form.Control
+                  autoComplete="off"
                   id="channelName"
                   name="name"
                   value={values.name}
